@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BD VIRAL LINK</title><link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top"><a class="brand" href="/">BD <span>VIRAL LINK</span></a><a class="admin-link" href="/admin">Admin</a></header>
+<main class="wrap">
+  <section class="hero"><p class="eyebrow">WATCH • SHARE • ENJOY</p><h1>Discover Viral Videos</h1><p>Explore videos shared on BD VIRAL LINK.</p>
+    <input id="search" class="search" type="search" placeholder="Search videos...">
+  </section>
+  <section><div class="section-head"><h2>Latest Videos</h2><span id="count" class="muted"></span></div><div id="videos" class="video-grid"><p class="muted">Loading videos...</p></div></section>
+</main>
+<footer>© <span id="year"></span> BD VIRAL LINK</footer>
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+let allVideos = [];
+function render(list) {
+  const root = document.getElementById("videos");
+  document.getElementById("count").textContent = list.length + " videos";
+  if (!list.length) { root.innerHTML = '<div class="empty">No videos yet. Please check again later.</div>'; return; }
+  root.innerHTML = list.map(v => `<a class="video-card" href="/watch/${encodeURIComponent(v.id)}">
+    <div class="thumb"><span>▶</span></div><div class="card-body"><span class="tag">${escapeHtml(v.category)}</span><h3>${escapeHtml(v.title)}</h3><p>${new Date(v.createdAt).toLocaleDateString()}</p></div></a>`).join("");
+}
+function escapeHtml(s) { return String(s || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+fetch("/api/videos").then(r => r.json()).then(v => { allVideos = v; render(v); }).catch(() => { document.getElementById("videos").textContent = "Could not load videos."; });
+document.getElementById("search").addEventListener("input", e => {
+  const q = e.target.value.toLowerCase();
+  render(allVideos.filter(v => (v.title + " " + v.category + " " + v.description).toLowerCase().includes(q)));
+});
+</script>
+</body></html>

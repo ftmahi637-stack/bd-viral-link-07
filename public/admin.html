@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin • BD VIRAL LINK</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<header class="top"><a class="brand" href="/">BD <span>VIRAL LINK</span></a><a class="admin-link" href="/">View site</a></header>
+<main class="wrap admin-wrap">
+  <section id="loginBox" class="panel narrow"><p class="eyebrow">PRIVATE AREA</p><h1>Admin Login</h1><p class="muted">Sign in to manage your videos.</p>
+    <form id="loginForm"><label>Username<input name="username" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="btn" type="submit">Login</button></form><p id="loginMsg" class="message"></p>
+  </section>
+  <section id="dashboard" class="panel" hidden><div class="section-head"><div><p class="eyebrow">CONTROL PANEL</p><h1>Manage Videos</h1></div><button id="logout" class="btn secondary">Logout</button></div>
+    <form id="uploadForm" class="upload-form"><label>Video title<input name="title" maxlength="120" required placeholder="Enter video title"></label><label>Category<select name="category"><option>Unexplained Facts</option><option>Dark Mystery</option><option>Funny</option><option>Entertainment</option><option>Other</option></select></label><label>Description<textarea name="description" rows="3" placeholder="Optional description"></textarea></label><label>Choose video file<input name="video" type="file" accept="video/*" required></label><button class="btn" type="submit">Upload Video</button><p id="uploadMsg" class="message"></p></form>
+    <h2>Your Videos</h2><div id="manageList" class="manage-list"></div>
+  </section>
+</main>
+<script>
+const loginBox=document.getElementById("loginBox"), dashboard=document.getElementById("dashboard");
+async function api(url, options={}) { const r=await fetch(url,{credentials:"same-origin",...options}); let d={}; try{d=await r.json()}catch{} if(!r.ok) throw new Error(d.error||"Request failed"); return d; }
+function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+async function showDashboard(){loginBox.hidden=true;dashboard.hidden=false;await loadVideos();}
+async function loadVideos(){const vs=await api("/api/videos");const el=document.getElementById("manageList");el.innerHTML=vs.length?vs.map(v=>`<div class="manage-item"><div><strong>${esc(v.title)}</strong><p class="muted">${esc(v.category)}</p><a href="/watch/${encodeURIComponent(v.id)}" target="_blank">Open video</a></div><button class="btn danger" data-id="${esc(v.id)}">Delete</button></div>`).join(""):"<p class='muted'>No videos uploaded yet.</p>";}
+api("/api/session").then(s=>{if(s.isAdmin)showDashboard();}).catch(()=>{});
+document.getElementById("loginForm").addEventListener("submit",async e=>{e.preventDefault();const f=new FormData(e.target);const msg=document.getElementById("loginMsg");msg.textContent="Signing in...";try{await api("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:f.get("username"),password:f.get("password")})});msg.textContent="";await showDashboard();}catch(err){msg.textContent=err.message;}});
+document.getElementById("uploadForm").addEventListener("submit",async e=>{e.preventDefault();const msg=document.getElementById("uploadMsg"),btn=e.target.querySelector("button");btn.disabled=true;msg.textContent="Uploading... please wait.";try{const r=await fetch("/api/upload",{method:"POST",body:new FormData(e.target),credentials:"same-origin"});const d=await r.json();if(!r.ok)throw new Error(d.error||"Upload failed");msg.textContent="Upload successful!";e.target.reset();await loadVideos();}catch(err){msg.textContent=err.message;}finally{btn.disabled=false;}});
+document.getElementById("manageList").addEventListener("click",async e=>{const b=e.target.closest("button[data-id]");if(!b)return;if(!confirm("Delete this video?"))return;try{await api("/api/videos/"+encodeURIComponent(b.dataset.id),{method:"DELETE"});await loadVideos();}catch(err){alert(err.message);}});
+document.getElementById("logout").addEventListener("click",async()=>{await api("/api/logout",{method:"POST"});dashboard.hidden=true;loginBox.hidden=false;});
+</script>
+</body></html>

@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Watch • BD VIRAL LINK</title><link rel="stylesheet" href="/style.css"></head>
+<body><header class="top"><a class="brand" href="/">BD <span>VIRAL LINK</span></a><a class="admin-link" href="/">Home</a></header>
+<main class="wrap watch-wrap"><a class="back" href="/">← Back to videos</a><div id="watchContent" class="panel"><p class="muted">Loading video...</p></div></main>
+<script>
+function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+const id=decodeURIComponent(location.pathname.split("/").filter(Boolean).pop()||"");
+fetch("/api/videos").then(r=>r.json()).then(vs=>{const v=vs.find(x=>x.id===id),root=document.getElementById("watchContent");if(!v){root.innerHTML="<h1>Video not found</h1>";return;}const src="/uploads/"+encodeURIComponent(v.filename);root.innerHTML=`<span class="tag">${esc(v.category)}</span><h1>${esc(v.title)}</h1><video class="player" controls playsinline preload="metadata" src="${src}"></video><p>${esc(v.description)}</p><div class="share-row"><button class="btn" id="share">Share video link</button><span id="shareMsg" class="muted"></span></div>`;document.getElementById("share").onclick=async()=>{try{await navigator.clipboard.writeText(location.href);document.getElementById("shareMsg").textContent="Link copied!";}catch{document.getElementById("shareMsg").textContent=location.href;}};}).catch(()=>document.getElementById("watchContent").textContent="Could not load video.");
+</script></body></html>
