@@ -1,0 +1,5 @@
+# Copy these values into Render Environment settings.
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=change-this-to-a-long-password
+SESSION_SECRET=replace-with-a-long-random-secret
+# Optional: set DATA_DIR=/var/data when using a Render persistent disk

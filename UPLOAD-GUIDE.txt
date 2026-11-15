@@ -1,0 +1,22 @@
+BD VIRAL LINK - COMPLETE STARTER PACKAGE
+
+ROOT FILES:
+package.json
+server.js
+.gitignore
+.env.example
+gitignore-content.txt (visible helper copy)
+env-example-content.txt (visible helper copy)
+UPLOAD-GUIDE.txt
+
+PUBLIC FOLDER:
+public/index.html
+public/admin.html
+public/watch.html
+public/style.css
+
+IMPORTANT:
+In GitHub, upload package.json, server.js, .gitignore, and .env.example to the repository root.
+Upload the four files inside public/ into a GitHub folder named public.
+Do NOT upload a real .env file or video files.
+On Render set ADMIN_USERNAME, ADMIN_PASSWORD, and SESSION_SECRET as Environment Variables.
